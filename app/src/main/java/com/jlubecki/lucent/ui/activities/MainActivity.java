@@ -1,7 +1,9 @@
-package com.jlubecki.lucent;
+package com.jlubecki.lucent.ui.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.jlubecki.lucent.R;
 
 public class MainActivity extends AppCompatActivity {
 

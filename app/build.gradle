@@ -23,7 +23,10 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    // Androidg
+    // Spotify
+    compile 'com.spotify.sdk:spotify-auth-beta23-noconnect-2.20b@aar'
+
+    // Android
     compile 'com.android.support:appcompat-v7:25.0.0'
 
     // Square
