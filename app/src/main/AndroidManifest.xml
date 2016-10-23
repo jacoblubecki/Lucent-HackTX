@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.jlubecki.lucent">
 
+    <uses-feature android:name="android.hardware.usb.host" />
+    <uses-permission android:name="android.permission.USB_PERMISSION" />
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -11,25 +13,34 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:name=".ui.LucentApp">
-        <activity android:name=".ui.activities.MainActivity">
+
+        <activity android:name=".ui.activities.MainActivity"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
 
-        <activity android:name=".ui.activities.SettingsActivity"/>
-
-        <service android:name=".ui.services.UsbConnectionService"
-            android:permission="@string/permission_usb_service">
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
             </intent-filter>
 
-            <meta-data android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+            <intent-filter>
+                <action android:name="android.hardware.usb.action.USB_DEVICE_DETACHED" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="com.jlubecki.lucent.USB_PERMISSION" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/device_filter" />
-        </service>
+        </activity>
+
+        <activity android:name=".ui.activities.SettingsActivity"/>
+
     </application>
 
 </manifest>

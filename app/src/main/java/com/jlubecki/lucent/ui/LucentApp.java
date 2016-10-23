@@ -1,7 +1,9 @@
 package com.jlubecki.lucent.ui;
 
 import android.app.Application;
-import android.support.compat.BuildConfig;
+import android.util.Log;
+
+import com.jlubecki.lucent.BuildConfig;
 
 import timber.log.Timber;
 
@@ -15,8 +17,10 @@ public class LucentApp extends Application {
     public void onCreate() {
         super.onCreate();
 
-        if(BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         }
+
+        Timber.i("Lucent began.");
     }
 }
