@@ -15,7 +15,9 @@ import timber.log.Timber;
 
 public class NeuralNetwork {
 
-    private static final double LEARNING_RATE = 0.01;
+    public static NeuralNetwork instance;
+
+    private static final double LEARNING_RATE = 0.001;
 
     private static final int INPUT_LAYER_SIZE = 20;
     private static final int HIDDEN_LAYER_SIZE = 42;
@@ -24,9 +26,9 @@ public class NeuralNetwork {
     private int cycleIndex = 0;
     private final int maxIterationsPerCycle = 25;
 
-    private final Neuron[] inputLayer;
-    private final Neuron[] hiddenLayer;
-    private final Neuron[] outputLayer;
+    public final Neuron[] inputLayer;
+    public final Neuron[] hiddenLayer;
+    public final Neuron[] outputLayer;
 
     private double currentErr;
 
@@ -52,12 +54,16 @@ public class NeuralNetwork {
 
             outputLayer[i] = new Neuron(seedOutputWeight, seedOuputBias);
         }
+
+        instance = this;
     }
 
     public NeuralNetwork(Neuron[] in, Neuron[] hid, Neuron[] out) {
         this.inputLayer = in;
         this.hiddenLayer = hid;
         this.outputLayer = out;
+
+        instance = this;
     }
 
     public void train(Trainable input) {
@@ -124,5 +130,15 @@ public class NeuralNetwork {
     public interface Trainable {
         double[] trainingInput();
         double targetValue();
+    }
+
+    @Override
+    public String toString() {
+        NetworkState state = new NetworkState();
+        state.inputLayer = inputLayer;
+        state.hiddenLayer = hiddenLayer;
+        state.outputLayer = outputLayer;
+
+        return state.toString();
     }
 }

@@ -13,11 +13,11 @@ public class Neuron {
     private double[] weights;
     private double[] biases;
 
-    public double[] outCalc;
-    private double[] outCalcDiff;
-    public double[] outCalcDelta;
-    private double[] lastInput;
-    public double output;
+    transient public double[] outCalc;
+    transient private double[] outCalcDiff;
+    transient public double[] outCalcDelta;
+    transient private double[] lastInput;
+    transient public double output;
 
     public Neuron() {
         this(genSeed(3.0, 1), genSeed(3.0, 1));

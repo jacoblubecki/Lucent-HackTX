@@ -15,7 +15,8 @@
         android:name=".ui.LucentApp">
 
         <activity android:name=".ui.activities.MainActivity"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

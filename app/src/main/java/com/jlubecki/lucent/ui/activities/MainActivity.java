@@ -19,6 +19,7 @@ import com.felhr.usbserial.UsbSerialInterface;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jlubecki.lucent.R;
+import com.jlubecki.lucent.neuralnet.NeuralNetwork;
 import com.jlubecki.lucent.sensor.EEGReceiver;
 import com.jlubecki.lucent.ui.services.LucentService;
 import com.jlubecki.lucent.utils.ArduinoUtils;
@@ -47,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.text)
     TextView textView;
+
+    @BindView(R.id.text2)
+    TextView textView2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -241,6 +245,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 textView.setText(text);
+
+                if(NeuralNetwork.instance != null) {
+                    textView2.setText(NeuralNetwork.instance.toString());
+                }
             }
         });
     }

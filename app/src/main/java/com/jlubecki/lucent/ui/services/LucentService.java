@@ -43,7 +43,7 @@ public class LucentService extends Service {
 
     public static final String STOP = "HAMMER_TIME";
 
-    private final int UPDATE_INTERVAL = 20 * 1000;
+    private final int UPDATE_INTERVAL = 10 * 1000;
     private Timer timer = new Timer();
 
     private NeuralNetwork network;
@@ -74,6 +74,7 @@ public class LucentService extends Service {
             network = new NeuralNetwork();
         } else {
             network = new NeuralNetwork(state.inputLayer, state.hiddenLayer, state.outputLayer);
+            aToast("Loaded existing net.");
         }
 
         api = new SpotifyApi(getString(R.string.spotify_thing));
