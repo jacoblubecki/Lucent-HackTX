@@ -184,8 +184,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onError(String json, Throwable t) {
-//            updateText("Error: " + t.getMessage() + "\n" + json);
-            Timber.e(t);
+            updateText("Error: " + t.getMessage() + "\n" + json);
         }
     };
 
