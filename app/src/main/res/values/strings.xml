@@ -10,4 +10,6 @@
     <string name="signed_email">Email: %s</string>
     <string name="signed_out">Not signed in</string>
 
+    <string name="permission_usb_service">com.jlubecki.lucent.ui.services.UsbConnectionService.PERMISSION</string>
+
 </resources>

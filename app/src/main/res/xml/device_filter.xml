@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <usb-device vendor-id="9025" /> <!-- Arduino Vendor ID -->
+    <usb-device vendor-id="1003" /> <!-- VID from Arduino editor for Blend Micro board -->
+</resources>
