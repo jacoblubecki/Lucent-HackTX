@@ -5,6 +5,9 @@
     <uses-feature android:name="android.hardware.usb.host" />
     <uses-permission android:name="android.permission.USB_PERMISSION" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
 
     <application
         android:allowBackup="true"
@@ -40,6 +43,33 @@
         </activity>
 
         <activity android:name=".ui.activities.SettingsActivity"/>
+
+        <service android:name="com.tooleap.sdk.TooleapAppService"/>
+        <service android:name="com.tooleap.sdk.TooleapUIService"
+            android:process=":UIService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.tooleap.sdk.BIND_UI_SERVICE" />
+            </intent-filter>
+        </service>
+        <receiver android:name="com.tooleap.sdk.TooleapReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_REPLACED"/>
+                <data android:scheme="package"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.tooleap.sdk.TOOLEAP_ACTION"/>
+            </intent-filter>
+        </receiver>
+
+        <activity android:name=".ui.activities.MiniAppActivity"
+            android:theme="@android:style/Theme.Translucent"
+            android:launchMode="singleInstance"
+            android:taskAffinity=".tooleap">
+            <intent-filter>
+                <action android:name="com.tooleap.sdk.TOOLEAP_SHOW"/>
+            </intent-filter>
+        </activity>
 
     </application>
 

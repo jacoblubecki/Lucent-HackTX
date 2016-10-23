@@ -1,27 +1,33 @@
 package com.jlubecki.lucent.ui.activities;
 
 import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.hardware.usb.UsbDevice;
 import android.hardware.usb.UsbDeviceConnection;
 import android.hardware.usb.UsbManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.felhr.usbserial.UsbSerialDevice;
 import com.felhr.usbserial.UsbSerialInterface;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jlubecki.lucent.R;
 import com.jlubecki.lucent.utils.ArduinoUtils;
+import com.tooleap.sdk.Tooleap;
+import com.tooleap.sdk.TooleapPopOutMiniApp;
 
-import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +38,9 @@ import timber.log.Timber;
 public class MainActivity extends AppCompatActivity {
     private static final String ACTION_USB_PERMISSION = "com.jlubecki.lucent.USB_PERMISSION";
     private static final int BLEND_MICRO_VENDOR_ID = 0x3EB;
+    public static int OVERLAY_PERMISSION_REQ_CODE = 1234;
+
+    private FirebaseUser mUser;
 
     private UsbDeviceConnection connection;
     private UsbManager usbManager;
@@ -40,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.text)
     TextView textView;
+    @BindView(R.id.switch1)
+    Switch mSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +59,13 @@ public class MainActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
+        mUser = FirebaseAuth.getInstance().getCurrentUser();
         usbManager = (UsbManager) getSystemService(USB_SERVICE);
 
+        checkSignedIn(mUser);
+
         openArduinoConnection();
+
     }
 
     @Override
@@ -94,6 +109,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+        mUser=FirebaseAuth.getInstance().getCurrentUser();
+        checkSignedIn(mUser);
     }
 
     @Override
@@ -112,6 +129,14 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void checkSignedIn(FirebaseUser user){
+        if(user==null){
+            Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+            Toast.makeText(this, "Please sign in to continue", Toast.LENGTH_SHORT).show();
+            startActivity(intent);
+        }
     }
 
     private void openArduinoConnection() {
@@ -196,5 +221,44 @@ public class MainActivity extends AppCompatActivity {
                 textView.setText(text);
             }
         });
+    }
+
+    public void switchOnClick(View view) {
+        Intent intent = new Intent(getApplicationContext(), MiniAppActivity.class);
+        TooleapPopOutMiniApp miniApp = new TooleapPopOutMiniApp(getApplicationContext(), intent);
+        Tooleap tooleap = Tooleap.getInstance(getApplicationContext());
+        miniApp.contentTitle = "Lucent Bubble";
+        miniApp.notificationText = "Press to see data";
+        miniApp.bubbleBackgroundColor = 0x78FFFFFF;
+
+        if(mSwitch.isChecked()){
+            if(Build.VERSION.SDK_INT>=23) {
+                if (!Settings.canDrawOverlays(this)) {
+                    intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                            Uri.parse("package:" + getPackageName()));
+                    startActivityForResult(intent, OVERLAY_PERMISSION_REQ_CODE);
+                }
+                else
+                    tooleap.addMiniApp(miniApp);
+            }
+            else
+            tooleap.addMiniApp(miniApp);
+
+        }
+        else {
+            tooleap.removeAllMiniApps();
+        }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(Build.VERSION.SDK_INT>=23) {
+            if (requestCode == OVERLAY_PERMISSION_REQ_CODE) {
+                if (!Settings.canDrawOverlays(this)) {
+                    mSwitch.setChecked(false);
+                    mSwitch.setClickable(false);
+                    Toast.makeText(getApplicationContext(), "Permission for overlays denied, please enable", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
     }
 }

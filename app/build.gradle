@@ -24,39 +24,33 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     // Spotify
     compile 'com.spotify.sdk:spotify-auth-beta23-noconnect-2.20b@aar'
-
     // Android
     compile 'com.android.support:appcompat-v7:25.0.0'
-
     // Square
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.retrofit2:converter-gson:2.1.0'
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
-
     // Firebase
     compile 'com.google.firebase:firebase-database:9.6.1'
     compile 'com.google.firebase:firebase-core:9.6.1'
     compile 'com.google.firebase:firebase-auth:9.6.1'
     //noinspection GradleDependency
     compile 'com.google.android.gms:play-services-auth:9.6.1'
-
     // Jake Wharton
     compile 'com.jakewharton.timber:timber:4.3.1'
     compile 'com.jakewharton:butterknife:8.4.0'
     apt 'com.jakewharton:butterknife-compiler:8.4.0'
-
     // Arduino
     compile 'com.github.felHR85:UsbSerial:4.5'
-
     // Test
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
 
     })
     testCompile 'junit:junit:4.12'
+    compile files('libs/tooleap-sdk-0.9.7.jar')
 }
 apply plugin: 'com.google.gms.google-services'

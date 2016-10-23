@@ -11,5 +11,6 @@
     <string name="signed_out">Not signed in</string>
 
     <string name="permission_usb_service">com.jlubecki.lucent.ui.services.UsbConnectionService.PERMISSION</string>
+    <string name="on_off_text">Accumulate data to create playlist</string>
 
 </resources>
