@@ -5,6 +5,7 @@
 
     <!-- Server Client ID -->
     <string name="server_client_id">1040158713632-d6hreagqlaptfb105ahnofl5ck0s92d4.apps.googleusercontent.com</string>
+    <string name="spotify_thing">a523781978814629865f58b502049327</string>
 
     <string name="signed_in">Signed in as %s</string>
     <string name="signed_email">Email: %s</string>

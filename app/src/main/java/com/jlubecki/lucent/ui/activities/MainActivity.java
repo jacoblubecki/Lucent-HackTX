@@ -24,9 +24,19 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jlubecki.lucent.R;
+import com.jlubecki.lucent.neuralnet.NeuralNetwork;
+import com.jlubecki.lucent.sensor.EEGReceiver;
+import com.jlubecki.lucent.ui.services.LucentService;
 import com.jlubecki.lucent.utils.ArduinoUtils;
+
 import com.tooleap.sdk.Tooleap;
 import com.tooleap.sdk.TooleapPopOutMiniApp;
+
+import com.spotify.sdk.android.authentication.AuthenticationClient;
+import com.spotify.sdk.android.authentication.AuthenticationHandler;
+import com.spotify.sdk.android.authentication.AuthenticationRequest;
+import com.spotify.sdk.android.authentication.AuthenticationResponse;
+import com.spotify.sdk.android.authentication.SpotifyAuthActivity;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -52,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.switch1)
     Switch mSwitch;
 
+    @BindView(R.id.text2)
+    TextView textView2;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,6 +79,45 @@ public class MainActivity extends AppCompatActivity {
 
         openArduinoConnection();
 
+        startService(new Intent(this, LucentService.class));
+
+        AuthenticationRequest request = new AuthenticationRequest.Builder("a523781978814629865f58b502049327", AuthenticationResponse.Type.TOKEN, "lucent://spotify_callback")
+                .setScopes(new String[]{ "playlist-modify-private", "playlist-read-private",  })
+                .build();
+
+        AuthenticationClient.openLoginActivity(this, 1337, request);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(Build.VERSION.SDK_INT>=23) {
+            if (requestCode == OVERLAY_PERMISSION_REQ_CODE) {
+                if (!Settings.canDrawOverlays(this)) {
+                    mSwitch.setChecked(false);
+                    mSwitch.setClickable(false);
+                    Toast.makeText(getApplicationContext(), "Permission for overlays denied, please enable", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+
+        if(requestCode == 1337) {
+            AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, data);
+
+            if(response != null) {
+                String token = response.getAccessToken();
+                if(token != null) {
+                    getSharedPreferences(LucentService.PREFS_NAME, MODE_PRIVATE).edit()
+                            .putString("TOKEN", token)
+                            .apply();
+                } else {
+                    Toast.makeText(this, "Err: " + response.getError(), Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "Err: no response", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override
@@ -111,6 +163,14 @@ public class MainActivity extends AppCompatActivity {
         }
         mUser=FirebaseAuth.getInstance().getCurrentUser();
         checkSignedIn(mUser);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        Intent intent = new Intent(LucentService.STOP);
+        startActivity(intent);
     }
 
     @Override
@@ -180,6 +240,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onJsonString(String json) {
             updateText(json);
+            Intent eeg = new Intent(EEGReceiver.ACTION_EEG);
+            eeg.putExtra(EEGReceiver.EXTRA_SENSOR_JSON, json);
+            sendBroadcast(eeg);
         }
 
         @Override
@@ -218,6 +281,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 textView.setText(text);
+
+                if(NeuralNetwork.instance != null) {
+                    textView2.setText(NeuralNetwork.instance.toString());
+                }
             }
         });
     }
@@ -246,18 +313,6 @@ public class MainActivity extends AppCompatActivity {
         }
         else {
             tooleap.removeAllMiniApps();
-        }
-    }
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(Build.VERSION.SDK_INT>=23) {
-            if (requestCode == OVERLAY_PERMISSION_REQ_CODE) {
-                if (!Settings.canDrawOverlays(this)) {
-                    mSwitch.setChecked(false);
-                    mSwitch.setClickable(false);
-                    Toast.makeText(getApplicationContext(), "Permission for overlays denied, please enable", Toast.LENGTH_LONG).show();
-                }
-            }
         }
     }
 }

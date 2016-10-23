@@ -48,8 +48,6 @@ public class ArduinoUtils implements UsbSerialDevice.UsbReadCallback {
             e.printStackTrace();
         }
 
-        Timber.i(fromBytes);
-
         if (fromBytes != null) {
             for (char c : fromBytes.toCharArray()) {
                 switch (state) {
@@ -80,7 +78,6 @@ public class ArduinoUtils implements UsbSerialDevice.UsbReadCallback {
                             this.state = ParseState.NONE;
                             this.callback.onError(current.toString(), new AssertionError("Found start token when state was MIDDLE."));
                         } else if (c == DELIMITER) {
-                            Timber.i("Delimiter found.");
                             this.elementCount++;
                         }
                         break;
@@ -90,7 +87,6 @@ public class ArduinoUtils implements UsbSerialDevice.UsbReadCallback {
                             this.callback.onError(current.toString(), new AssertionError("Expected 12 elements but found " + elementCount + "."));
                             this.state = ParseState.NONE;
                         } else {
-                            Timber.i("Printing json.");
                             this.callback.onJsonString(current.toString());
 
                             if(c == START_TOKEN) {

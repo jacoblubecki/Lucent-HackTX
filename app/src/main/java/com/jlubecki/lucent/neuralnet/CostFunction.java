@@ -11,11 +11,11 @@ public final class CostFunction {
      */
     private static final double DESIRED_OUTPUT = 85;
 
-    public static final double[] evaluate(double[] output) {
+    public static final double[] evaluate(double[] output, double desired) {
         double[] errorOut = new double[output.length];
 
         for(int i = 0; i < output.length; i++) {
-            errorOut[i] = Math.pow(output[i] - DESIRED_OUTPUT, 2);
+            errorOut[i] = Math.pow(output[i] - desired, 2);
         }
 
         return errorOut;

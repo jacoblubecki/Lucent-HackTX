@@ -18,7 +18,8 @@
         android:name=".ui.LucentApp">
 
         <activity android:name=".ui.activities.MainActivity"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -46,8 +47,7 @@
 
         <service android:name="com.tooleap.sdk.TooleapAppService"/>
         <service android:name="com.tooleap.sdk.TooleapUIService"
-            android:process=":UIService"
-            android:exported="true">
+            android:process=":UIService" >
             <intent-filter>
                 <action android:name="com.tooleap.sdk.BIND_UI_SERVICE" />
             </intent-filter>
@@ -82,6 +82,22 @@
         </intent-filter>
 
         </receiver>
+
+        <receiver android:name=".sensor.EEGReceiver"
+            android:exported="false"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="com.jlubecki.lucent.sensor.ACTION_EEG" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name=".ui.services.LucentService">
+            <intent-filter>
+                <action android:name="HAMMER_TIME" />
+            </intent-filter>
+        </service>
+
+        <activity android:name="com.spotify.sdk.android.authentication.LoginActivity"/>
 
     </application>
 
