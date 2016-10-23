@@ -28,15 +28,11 @@ import com.jlubecki.lucent.neuralnet.NeuralNetwork;
 import com.jlubecki.lucent.sensor.EEGReceiver;
 import com.jlubecki.lucent.ui.services.LucentService;
 import com.jlubecki.lucent.utils.ArduinoUtils;
-
-import com.tooleap.sdk.Tooleap;
-import com.tooleap.sdk.TooleapPopOutMiniApp;
-
 import com.spotify.sdk.android.authentication.AuthenticationClient;
-import com.spotify.sdk.android.authentication.AuthenticationHandler;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
-import com.spotify.sdk.android.authentication.SpotifyAuthActivity;
+import com.tooleap.sdk.Tooleap;
+import com.tooleap.sdk.TooleapPopOutMiniApp;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -82,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         startService(new Intent(this, LucentService.class));
 
         AuthenticationRequest request = new AuthenticationRequest.Builder("a523781978814629865f58b502049327", AuthenticationResponse.Type.TOKEN, "lucent://spotify_callback")
-                .setScopes(new String[]{ "playlist-modify-private", "playlist-read-private",  })
+                .setScopes(new String[]{"playlist-modify-private", "playlist-read-private",})
                 .build();
 
         AuthenticationClient.openLoginActivity(this, 1337, request);
@@ -92,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(Build.VERSION.SDK_INT>=23) {
+        if (Build.VERSION.SDK_INT >= 23) {
             if (requestCode == OVERLAY_PERMISSION_REQ_CODE) {
                 if (!Settings.canDrawOverlays(this)) {
                     mSwitch.setChecked(false);
@@ -102,12 +98,12 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        if(requestCode == 1337) {
+        if (requestCode == 1337) {
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, data);
 
-            if(response != null) {
+            if (response != null) {
                 String token = response.getAccessToken();
-                if(token != null) {
+                if (token != null) {
                     getSharedPreferences(LucentService.PREFS_NAME, MODE_PRIVATE).edit()
                             .putString("TOKEN", token)
                             .apply();
@@ -140,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        if(intent != null && intent.getAction() != null) {
+        if (intent != null && intent.getAction() != null) {
 
             Timber.i(intent.getAction());
 
@@ -161,7 +157,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
-        mUser=FirebaseAuth.getInstance().getCurrentUser();
+
+        mUser = FirebaseAuth.getInstance().getCurrentUser();
         checkSignedIn(mUser);
     }
 
@@ -191,8 +188,8 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void checkSignedIn(FirebaseUser user){
-        if(user==null){
+    private void checkSignedIn(FirebaseUser user) {
+        if (user == null) {
             Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
             Toast.makeText(this, "Please sign in to continue", Toast.LENGTH_SHORT).show();
             startActivity(intent);
@@ -215,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
                     Intent usbIntent = new Intent(ACTION_USB_PERMISSION);
                     usbIntent.setPackage("com.jlubecki.lucent");
                     PendingIntent pi = PendingIntent.getBroadcast(this, 0, usbIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-                    if(!usbManager.hasPermission(device)) {
+                    if (!usbManager.hasPermission(device)) {
                         usbManager.requestPermission(device, pi);
                     } else {
                         connect();
@@ -282,7 +279,7 @@ public class MainActivity extends AppCompatActivity {
             public void run() {
                 textView.setText(text);
 
-                if(NeuralNetwork.instance != null) {
+                if (NeuralNetwork.instance != null) {
                     textView2.setText(NeuralNetwork.instance.toString());
                 }
             }
@@ -297,21 +294,18 @@ public class MainActivity extends AppCompatActivity {
         miniApp.notificationText = "Press to see data";
         miniApp.bubbleBackgroundColor = 0x78FFFFFF;
 
-        if(mSwitch.isChecked()){
-            if(Build.VERSION.SDK_INT>=23) {
+        if (mSwitch.isChecked()) {
+            if (Build.VERSION.SDK_INT >= 23) {
                 if (!Settings.canDrawOverlays(this)) {
                     intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                             Uri.parse("package:" + getPackageName()));
                     startActivityForResult(intent, OVERLAY_PERMISSION_REQ_CODE);
-                }
-                else
+                } else
                     tooleap.addMiniApp(miniApp);
-            }
-            else
-            tooleap.addMiniApp(miniApp);
+            } else
+                tooleap.addMiniApp(miniApp);
 
-        }
-        else {
+        } else {
             tooleap.removeAllMiniApps();
         }
     }

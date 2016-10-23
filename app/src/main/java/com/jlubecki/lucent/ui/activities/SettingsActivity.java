@@ -37,10 +37,14 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
 
     private FirebaseAuth.AuthStateListener mAuthListener;
 
-    @BindView(R.id.email_text_view) TextView mEmailTextView;
-    @BindView(R.id.name_text_view) TextView mNameTextView;
-    @BindView(R.id.sign_in_button) SignInButton signInButton;
-    @BindView(R.id.sign_out_button) Button signOutButton;
+    @BindView(R.id.email_text_view)
+    TextView mEmailTextView;
+    @BindView(R.id.name_text_view)
+    TextView mNameTextView;
+    @BindView(R.id.sign_in_button)
+    SignInButton signInButton;
+    @BindView(R.id.sign_out_button)
+    Button signOutButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,10 +68,9 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
-                if(user!=null){
+                if (user != null) {
                     updateUI(user);
-                }
-                else{
+                } else {
                     updateUI(null);
                 }
             }
@@ -95,18 +98,18 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
         });
     }
 
-    public void onStart(){
+    public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
     }
 
-    public void onStop(){
+    public void onStop() {
         super.onStop();
-        if(mAuthListener!=null)
+        if (mAuthListener != null)
             mAuth.removeAuthStateListener(mAuthListener);
     }
 
-    private void signIn(){
+    private void signIn() {
         Intent signInIntent = Auth.GoogleSignInApi.getSignInIntent(mGoogleApiClient);
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
@@ -115,41 +118,39 @@ public class SettingsActivity extends AppCompatActivity implements GoogleApiClie
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode== RC_SIGN_IN) {
+        if (requestCode == RC_SIGN_IN) {
             GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
-            if(result.isSuccess()){
+            if (result.isSuccess()) {
                 GoogleSignInAccount account = result.getSignInAccount();
                 firebaseAuthWithGoogle(account);
-            }
-            else{
+            } else {
                 updateUI(null);
             }
         }
     }
 
-    private void firebaseAuthWithGoogle(GoogleSignInAccount acct){
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(!task.isSuccessful()){
+                        if (!task.isSuccessful()) {
                             Toast.makeText(SettingsActivity.this, "Error signing in", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
     }
 
-    private void updateUI(FirebaseUser user){
-        if(user!=null){
+    private void updateUI(FirebaseUser user) {
+        if (user != null) {
             mEmailTextView.setVisibility(View.VISIBLE);
             mNameTextView.setText(getString(R.string.signed_in, user.getDisplayName()));
             mEmailTextView.setText(getString(R.string.signed_email, user.getEmail()));
 
             findViewById(R.id.sign_out_button).setVisibility(View.VISIBLE);
             findViewById(R.id.sign_in_button).setVisibility(View.GONE);
-        }
-        else{
+        } else {
             mNameTextView.setText(getString(R.string.signed_out));
             mEmailTextView.setVisibility(View.GONE);
 
