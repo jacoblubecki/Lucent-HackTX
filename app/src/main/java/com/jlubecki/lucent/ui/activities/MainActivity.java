@@ -199,8 +199,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private final ArduinoUtils.ResultCallback callback = new ArduinoUtils.ResultCallback() {
-        Gson gson = new GsonBuilder().create();
-
         @Override
         public void onJsonString(String json) {
             updateText(json);

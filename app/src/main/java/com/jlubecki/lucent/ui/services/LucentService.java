@@ -93,40 +93,44 @@ public class LucentService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startid) {
-        timer.scheduleAtFixedRate(new TimerTask() {
+        if(intent.getAction() == null || !intent.getAction().equals(STOP)) {
+            timer.scheduleAtFixedRate(new TimerTask() {
 
-            @Override
-            public void run() {
-                PlaybackMeta meta = receiver.pollData();
-                final EEGData data = eegReceiver.pollData();
+                @Override
+                public void run() {
+                    PlaybackMeta meta = receiver.pollData();
+                    final EEGData data = eegReceiver.pollData();
 
-                aToast("Scheduled learning.");
+                    aToast("Scheduled learning.");
 
-                if(meta != null && data != null) {
-                    String id = meta.trackId.replace("spotify:track:", "");
-                    api.getService().getAudioFeatures(id).enqueue(new Callback<TrackAudioFeatures>() {
-                        @Override
-                        public void onResponse(Call<TrackAudioFeatures> call, Response<TrackAudioFeatures> response) {
-                            if(response.isSuccessful()) {
+                    if (meta != null && data != null) {
+                        String id = meta.trackId.replace("spotify:track:", "");
+                        api.getService().getAudioFeatures(id).enqueue(new Callback<TrackAudioFeatures>() {
+                            @Override
+                            public void onResponse(Call<TrackAudioFeatures> call, Response<TrackAudioFeatures> response) {
+                                if (response.isSuccessful()) {
 
-                                aToast("Begin neural net.");
-                                network.train(new TrainingModel(data, response.body()));
-                                network.print(getApplicationContext());
-                            } else {
-                                Timber.wtf("WTF");
+                                    aToast("Begin neural net.");
+                                    network.train(new TrainingModel(data, response.body()));
+                                    network.print(getApplicationContext());
+                                } else {
+                                    Timber.wtf("WTF");
+                                }
+
+                                Timber.d(response.message());
                             }
 
-                            Timber.d(response.message());
-                        }
-
-                        @Override
-                        public void onFailure(Call<TrackAudioFeatures> call, Throwable t) {
-                            Timber.wtf("WTF");
-                        }
-                    });
+                            @Override
+                            public void onFailure(Call<TrackAudioFeatures> call, Throwable t) {
+                                Timber.wtf("WTF");
+                            }
+                        });
+                    }
                 }
-            }
-        }, 0, UPDATE_INTERVAL);
+            }, 0, UPDATE_INTERVAL);
+        } else {
+            stopService();
+        }
         return START_STICKY;
     }
 
