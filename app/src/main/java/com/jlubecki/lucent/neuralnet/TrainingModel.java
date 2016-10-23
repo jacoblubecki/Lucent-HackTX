@@ -39,8 +39,7 @@ public class TrainingModel implements NeuralNetwork.Trainable {
                 audioFeatures.liveness,
                 audioFeatures.valence,
                 audioFeatures.tempo,
-                audioFeatures.timeSignature,
-
+                audioFeatures.timeSignature
         };
     }
 
