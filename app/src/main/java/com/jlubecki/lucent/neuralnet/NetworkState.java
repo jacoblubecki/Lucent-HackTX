@@ -1,0 +1,11 @@
+package com.jlubecki.lucent.neuralnet;
+
+/**
+ * Created by Jacob on 10/23/16.
+ */
+
+public class NetworkState {
+    public Neuron[] inputLayer;
+    public Neuron[] hiddenLayer;
+    public Neuron[] outputLayer;
+}

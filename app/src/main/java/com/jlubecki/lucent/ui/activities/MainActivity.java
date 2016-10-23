@@ -19,7 +19,14 @@ import com.felhr.usbserial.UsbSerialInterface;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.jlubecki.lucent.R;
+import com.jlubecki.lucent.sensor.EEGReceiver;
+import com.jlubecki.lucent.ui.services.LucentService;
 import com.jlubecki.lucent.utils.ArduinoUtils;
+import com.spotify.sdk.android.authentication.AuthenticationClient;
+import com.spotify.sdk.android.authentication.AuthenticationHandler;
+import com.spotify.sdk.android.authentication.AuthenticationRequest;
+import com.spotify.sdk.android.authentication.AuthenticationResponse;
+import com.spotify.sdk.android.authentication.SpotifyAuthActivity;
 
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
@@ -51,6 +58,36 @@ public class MainActivity extends AppCompatActivity {
         usbManager = (UsbManager) getSystemService(USB_SERVICE);
 
         openArduinoConnection();
+
+        startService(new Intent(this, LucentService.class));
+
+        AuthenticationRequest request = new AuthenticationRequest.Builder("a523781978814629865f58b502049327", AuthenticationResponse.Type.TOKEN, "lucent://spotify_callback")
+                .setScopes(new String[]{ "playlist-modify-private", "playlist-read-private",  })
+                .build();
+
+        AuthenticationClient.openLoginActivity(this, 1337, request);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == 1337) {
+            AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, data);
+
+            if(response != null) {
+                String token = response.getAccessToken();
+                if(token != null) {
+                    getSharedPreferences(LucentService.PREFS_NAME, MODE_PRIVATE).edit()
+                            .putString("TOKEN", token)
+                            .apply();
+                } else {
+                    Toast.makeText(this, "Err: " + response.getError(), Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "Err: no response", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     @Override
@@ -94,6 +131,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        Intent intent = new Intent(LucentService.STOP);
+        startActivity(intent);
     }
 
     @Override
@@ -155,6 +200,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onJsonString(String json) {
             updateText(json);
+            Intent eeg = new Intent(EEGReceiver.ACTION_EEG);
+            eeg.putExtra(EEGReceiver.EXTRA_SENSOR_JSON, json);
+            sendBroadcast(eeg);
         }
 
         @Override

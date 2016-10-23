@@ -42,7 +42,7 @@
         <activity android:name=".ui.activities.SettingsActivity"/>
 
         <receiver
-            android:name=".spotify.SpotifyReceiver"
+            android:name=".network.spotify.SpotifyReceiver"
             android:enabled="true"
             android:exported="true">
 
@@ -53,6 +53,22 @@
             </intent-filter>
 
         </receiver>
+
+        <receiver android:name=".sensor.EEGReceiver"
+            android:exported="false"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="com.jlubecki.lucent.sensor.ACTION_EEG" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name=".ui.services.LucentService">
+            <intent-filter>
+                <action android:name="HAMMER_TIME" />
+            </intent-filter>
+        </service>
+
+        <activity android:name="com.spotify.sdk.android.authentication.LoginActivity"/>
 
     </application>
 

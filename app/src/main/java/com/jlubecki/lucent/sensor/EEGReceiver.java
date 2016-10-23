@@ -1,9 +1,11 @@
-package com.jlubecki.lucent.network.spotify;
+package com.jlubecki.lucent.sensor;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.google.gson.GsonBuilder;
+import com.jlubecki.lucent.network.spotify.SpotifyReceiver;
 import com.jlubecki.lucent.network.spotify.models.PlaybackMeta;
 
 import timber.log.Timber;
@@ -12,15 +14,12 @@ import timber.log.Timber;
  * Created by Jacob on 10/23/16.
  */
 
-public class SpotifyReceiver extends BroadcastReceiver {
-    public static final class BroadcastTypes {
-        public static final String SPOTIFY_PACKAGE = "com.spotify.music";
-        public static final String PLAYBACK_STATE_CHANGED = SPOTIFY_PACKAGE + ".playbackstatechanged";
-        public static final String QUEUE_CHANGED = SPOTIFY_PACKAGE + ".queuechanged";
-        public static final String METADATA_CHANGED = SPOTIFY_PACKAGE + ".metadatachanged";
-    }
+public class EEGReceiver extends BroadcastReceiver {
 
-    private PlaybackMeta lastData;
+    public static final String ACTION_EEG = "com.jlubecki.lucent.sensor.ACTION_EEG";
+    public static final String EXTRA_SENSOR_JSON = "com.jlubecki.lucent.sensor.EXTRA_JSON";
+
+    private EEGData lastData;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -31,16 +30,16 @@ public class SpotifyReceiver extends BroadcastReceiver {
 
         String action = intent.getAction();
 
-        if (action.equals(BroadcastTypes.METADATA_CHANGED)) {
-            lastData = new PlaybackMeta(intent);
+        if (action.equals(ACTION_EEG)) {
+            lastData = new GsonBuilder().create().fromJson(intent.getStringExtra(EXTRA_SENSOR_JSON), EEGData.class);
 
             if(lastData == null) {
-                Timber.e("Data error.");
+                Timber.e("Null EEG data.");
             }
         }
     }
 
-    public PlaybackMeta pollData() {
+    public EEGData pollData() {
         return lastData;
     }
 }

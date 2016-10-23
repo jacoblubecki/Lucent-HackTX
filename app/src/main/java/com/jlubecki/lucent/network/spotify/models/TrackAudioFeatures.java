@@ -6,7 +6,7 @@ import com.jlubecki.lucent.neuralnet.NeuralNetwork;
  * Created by Jacob on 10/23/16.
  */
 
-public class TrackAudioFeatures implements NeuralNetwork.Trainable {
+public class TrackAudioFeatures {
     public double danceability;
     public double energy;
     public int key;
@@ -25,9 +25,4 @@ public class TrackAudioFeatures implements NeuralNetwork.Trainable {
     public String analysisUrl;
     public int durationMs;
     public int timeSignature;
-
-    @Override
-    public double[] trainingInput() {
-        return new double[] {danceability, energy, key, loudness, mode, speechiness, acousticness, instrumentalness, liveness, valence, tempo, durationMs, timeSignature};
-    }
 }

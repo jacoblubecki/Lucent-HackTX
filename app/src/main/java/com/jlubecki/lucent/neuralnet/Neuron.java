@@ -60,7 +60,7 @@ public class Neuron {
     }
 
     public void adjust(double learningRate, double[] propagatedError) {
-        for(int i = 0; i < weights.length; i++) {
+        for(int i = 0; i < lastInput.length; i++) {
             double err = propagatedError[i];
             outCalcDelta[i] = err * outCalcDiff[i];
 
